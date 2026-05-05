@@ -14,36 +14,33 @@ navigator.mediaDevices.getUserMedia({ video: true })
     });
 
 //atribuir uma função ao botão de captura
+
 botao.addEventListener("click", () => {
     // Desenhar o quadro atual do vídeo na area do canvas
     contexto.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    //obter a imagem capturada como um data URL 
-    const imagemDataURL = canvas.toDataURL("image/png");
-    //enviar a imagem para o servidor 
-    enviarImagem(imagemDataURL);
+
+    const imageDataURL = canvas.toDataURL("image/png");
+    enviarImagemParaServidor(imageDataURL);
 });
 
-
-    //função para enviar a imagem para o servidor
-    function enviarImagemParaServidor(imagemDataURL){
-    //simular o envio da imagem para o servidor
+function enviarImagemParaServidor(imageDataURL) {
+    // Implementar a lógica para enviar a imagem para o servidor
     console.log("Enviando imagem para o servidor...");
-    fetch("/", {
+
+    const base64String = imageDataURL.split(",")[1];
+
+    fetch("http://DOP3080-1247456:8000/images", {
         method: "POST",
-        body: JSON.stringify({ image: imagemDataURL }),
+        body: JSON.stringify({ image: base64String, mime_type: 'image/png' }),
         headers: {
             "Content-Type": "application/json"
         }
     })
-        .then( resposta => resposta.json())
-        .then( dados => {
-            console.log("Resposta do servidor: ", dados);
+        .then(response => response.json())
+        .then(dados => {
+        console.log("Resposta do servidor: ", dados);
+    })
+        .catch(erro => {
+        console.error("Erro ao enviar a imagem: ", erro);
         })
-        .catch( erro => {
-            console.error("Erro ao enviar a imagem: ", erro);
-        })
-
-
-
 }
